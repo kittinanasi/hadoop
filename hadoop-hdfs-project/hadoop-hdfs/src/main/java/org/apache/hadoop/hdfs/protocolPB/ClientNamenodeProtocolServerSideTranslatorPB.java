@@ -227,6 +227,8 @@ import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.Update
 import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpdatePipelineResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SatisfyStoragePolicyRequestProto;
 import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SatisfyStoragePolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.VerifyErasureCodedClusterSetupRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.VerifyErasureCodedClusterSetupResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.CreateEncryptionZoneResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.CreateEncryptionZoneRequestProto;
 import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.GetEZForPathResponseProto;
@@ -1854,6 +1856,19 @@ public class ClientNamenodeProtocolServerSideTranslatorPB implements
         builder.setEcPolicy(PBHelperClient.convertErasureCodingPolicy(ecPolicy));
       }
       return builder.build();
+    } catch (IOException e) {
+      throw new ServiceException(e);
+    }
+  }
+
+  @Override
+  public VerifyErasureCodedClusterSetupResponseProto verifyErasureCodedClusterSetup(
+      RpcController controller, VerifyErasureCodedClusterSetupRequestProto req)
+      throws ServiceException {
+    try {
+      int result = server.verifyClusterSetupSupportsEnabledEcPolicies();
+      return VerifyErasureCodedClusterSetupResponseProto.newBuilder()
+          .setResult(result).build();
     } catch (IOException e) {
       throw new ServiceException(e);
     }

@@ -2502,6 +2502,12 @@ public class NameNodeRpcServer implements NamenodeProtocols {
     }
   }
 
+  @Override // ClientProtocol
+  public int verifyClusterSetupSupportsEnabledEcPolicies() throws IOException {
+    checkNNStartup();
+    return namesystem.getVerifyClusterSetupSupportsEnabledEcPoliciesResult();
+  }
+
   @Override // ReconfigurationProtocol
   public void startReconfiguration() throws IOException {
     checkNNStartup();

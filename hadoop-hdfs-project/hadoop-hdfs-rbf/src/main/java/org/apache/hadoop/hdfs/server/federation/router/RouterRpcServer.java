@@ -1171,6 +1171,11 @@ public class RouterRpcServer extends AbstractService
   }
 
   @Override // ClientProtocol
+  public int verifyClusterSetupSupportsEnabledEcPolicies() throws IOException {
+    return clientProto.verifyClusterSetupSupportsEnabledEcPolicies();
+  }
+
+  @Override // ClientProtocol
   public ECBlockGroupStats getECBlockGroupStats() throws IOException {
     return clientProto.getECBlockGroupStats();
   }

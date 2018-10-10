@@ -838,6 +838,13 @@ message SatisfyStoragePolicyResponseProto {
 
 }
 
+message VerifyErasureCodedClusterSetupRequestProto {
+}
+
+message VerifyErasureCodedClusterSetupResponseProto {
+    required int32 result = 1;
+}
+
 service ClientNamenodeProtocol {
   rpc getBlockLocations(GetBlockLocationsRequestProto)
       returns(GetBlockLocationsResponseProto);
@@ -1026,4 +1033,6 @@ service ClientNamenodeProtocol {
       returns(ListOpenFilesResponseProto);
   rpc satisfyStoragePolicy(SatisfyStoragePolicyRequestProto)
       returns(SatisfyStoragePolicyResponseProto);
+  rpc verifyErasureCodedClusterSetup(VerifyErasureCodedClusterSetupRequestProto)
+      returns(VerifyErasureCodedClusterSetupResponseProto);
 }

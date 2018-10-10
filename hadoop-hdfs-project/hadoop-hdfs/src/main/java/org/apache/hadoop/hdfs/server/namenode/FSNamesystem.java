@@ -102,6 +102,7 @@ import org.apache.hadoop.hdfs.protocol.OpenFileEntry;
 import org.apache.hadoop.hdfs.protocol.ZoneReencryptionStatus;
 import org.apache.hadoop.hdfs.protocol.SnapshotDiffReportListing;
 import org.apache.hadoop.hdfs.protocol.SnapshotDiffReport;
+import org.apache.hadoop.hdfs.server.common.ErasureCodingClusterSetupVerifier;
 import org.apache.hadoop.hdfs.server.namenode.metrics.ReplicatedBlocksMBean;
 import org.apache.hadoop.hdfs.server.protocol.SlowDiskReports;
 import static org.apache.hadoop.util.Time.now;
@@ -8130,6 +8131,20 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
   public int getNumEnteringMaintenanceDataNodes() {
     return getBlockManager().getDatanodeManager().getEnteringMaintenanceNodes()
         .size();
+  }
+
+  @Override // ECBlockGroupsMBean and ClientProtocol
+  @Metric({"VerifyClusterSetupSupportsEnabledEcPoliciesResult",
+      "Verifies whether the current cluster setup can support all enabled " +
+          "EC policies."})
+  public int getVerifyClusterSetupSupportsEnabledEcPoliciesResult() {
+    Set<DatanodeDescriptor> report = getBlockManager().getDatanodeManager()
+        .getDatanodes();
+    ErasureCodingPolicy[] enabledEcPolicies =
+        getErasureCodingPolicyManager().getEnabledPolicies();
+    return ErasureCodingClusterSetupVerifier
+        .getVerifyClusterSetupSupportsEnabledEcPoliciesResult(report,
+            enabledEcPolicies);
   }
 
   // This method logs operatoinName without super user privilege.

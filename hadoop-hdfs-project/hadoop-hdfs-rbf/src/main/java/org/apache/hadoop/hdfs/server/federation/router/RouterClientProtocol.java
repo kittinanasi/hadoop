@@ -1507,6 +1507,11 @@ public class RouterClientProtocol implements ClientProtocol {
   }
 
   @Override
+  public int verifyClusterSetupSupportsEnabledEcPolicies() throws IOException {
+    return rpcServer.verifyClusterSetupSupportsEnabledEcPolicies();
+  }
+
+  @Override
   public ECBlockGroupStats getECBlockGroupStats() throws IOException {
     return erasureCoding.getECBlockGroupStats();
   }

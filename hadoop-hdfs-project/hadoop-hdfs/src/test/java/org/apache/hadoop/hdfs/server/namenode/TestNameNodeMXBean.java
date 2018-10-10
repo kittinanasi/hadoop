@@ -1008,6 +1008,10 @@ public class TestNameNodeMXBean {
         expectedTotalReplicatedBlocks, totalReplicaBlocks.longValue());
     assertEquals("Unexpected total ec block groups!",
         expectedTotalECBlockGroups, totalECBlockGroups.longValue());
+    assertEquals("Test cluster setup should not support " +
+        "the enabled erasure coding policies.",
+        2, (int) mbs.getAttribute(ecBlkGrpStateMBeanName,
+            "VerifyClusterSetupSupportsEnabledEcPoliciesResult"));
   }
 
   private String getEnabledEcPoliciesMetric() throws Exception {

@@ -189,6 +189,8 @@ import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.Update
 import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpgradeStatusRequestProto;
 import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpgradeStatusResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SatisfyStoragePolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.VerifyErasureCodedClusterSetupRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.VerifyErasureCodedClusterSetupResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.*;
 import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.CreateEncryptionZoneRequestProto;
 import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.EncryptionZoneProto;
@@ -1953,6 +1955,19 @@ public class ClientNamenodeProtocolTranslatorPB implements
         SatisfyStoragePolicyRequestProto.newBuilder().setSrc(src).build();
     try {
       rpcProxy.satisfyStoragePolicy(null, req);
+    } catch (ServiceException e) {
+      throw ProtobufHelper.getRemoteException(e);
+    }
+  }
+
+  @Override
+  public int verifyClusterSetupSupportsEnabledEcPolicies() throws IOException {
+    VerifyErasureCodedClusterSetupRequestProto req =
+        VerifyErasureCodedClusterSetupRequestProto.newBuilder().build();
+    try {
+      VerifyErasureCodedClusterSetupResponseProto resp =
+          rpcProxy.verifyErasureCodedClusterSetup(null, req);
+      return resp.getResult();
     } catch (ServiceException e) {
       throw ProtobufHelper.getRemoteException(e);
     }

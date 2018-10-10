@@ -1756,4 +1756,14 @@ public interface ClientProtocol {
    */
   @AtMostOnce
   void satisfyStoragePolicy(String path) throws IOException;
+
+  /**
+   * Verifies whether the cluster setup can support all enabled EC policies.
+   *
+   * @return the status of the verification,
+   * returns 0 if the current cluster setup supports all enabled EC policies.
+   * @throws IOException
+   */
+  @Idempotent
+  int verifyClusterSetupSupportsEnabledEcPolicies() throws IOException;
 }

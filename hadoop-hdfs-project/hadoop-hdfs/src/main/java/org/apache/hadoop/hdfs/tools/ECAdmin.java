@@ -588,6 +588,61 @@ public class ECAdmin extends Configured implements Tool {
     }
   }
 
+  /**
+   * Command to verify the cluster setup can support all enabled EC policies.
+   */
+  private static class VerifyClusterSetupCommand
+      implements AdminHelper.Command {
+    @Override
+    public String getName() {
+      return "-verifyClusterSetup";
+    }
+
+    @Override
+    public String getShortUsage() {
+      return "[" + getName() + "]\n";
+    }
+
+    @Override
+    public String getLongUsage() {
+      return getShortUsage() + "\n"
+          + "Verify the cluster setup can support all enabled erasure coding"
+          + " policies.\n";
+    }
+
+    @Override
+    public int run(Configuration conf, List<String> args) throws IOException {
+      if (args.size() > 0) {
+        System.err.println(getName() + ": Too many arguments");
+        return -1;
+      }
+      final DistributedFileSystem dfs = AdminHelper.getDFS(conf);
+      int result = dfs.getClient().getNamenode()
+          .verifyClusterSetupSupportsEnabledEcPolicies();
+      if (result == 0) {
+        System.out.println("The current cluster setup can support all " +
+            "enabled erasure coding policies.");
+      } else if (result == 1) {
+        System.out.println("The number of DataNodes " +
+            "is less than the minimum required number of DataNodes " +
+            "for enabled erasure coding policy.");
+      } else if (result == 2) {
+        System.out.println("The number of racks " +
+            "is less than the minimum required number of racks " +
+            "for enabled erasure coding policy.");
+      } else if (result == 3) {
+        System.out.println("The rack configuration is very uneven. " +
+            "This will cause issues to erasure coding block placement. " +
+            "Reconfigure the topology to more evenly distribute the " +
+            "DataNodes among racks.");
+      } else {
+        System.out.println("The cluster setup does not support " +
+            "all enabled erasure coding policies.");
+      }
+      return result;
+    }
+  }
+
   private static final AdminHelper.Command[] COMMANDS = {
       new ListECPoliciesCommand(),
       new AddECPoliciesCommand(),
@@ -597,6 +652,7 @@ public class ECAdmin extends Configured implements Tool {
       new UnsetECPolicyCommand(),
       new ListECCodecsCommand(),
       new EnableECPolicyCommand(),
-      new DisableECPolicyCommand()
+      new DisableECPolicyCommand(),
+      new VerifyClusterSetupCommand()
   };
 }

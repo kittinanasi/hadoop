@@ -19,6 +19,8 @@ package org.apache.hadoop.hdfs.server.namenode.metrics;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 
+import java.io.IOException;
+
 /**
  * This interface defines the methods to get status pertaining to blocks of type
  * {@link org.apache.hadoop.hdfs.protocol.BlockType#STRIPED} in FSNamesystem
@@ -66,4 +68,13 @@ public interface ECBlockGroupsMBean {
    * @return the enabled erasure coding policies separated with comma.
    */
   String getEnabledEcPolicies();
+
+  /**
+   * Verifies whether the cluster setup can support all enabled EC policies.
+   *
+   * @return the status of the verification,
+   * returns 0 if the current cluster setup supports all enabled EC policies.
+   * @throws IOException
+   */
+  int getVerifyClusterSetupSupportsEnabledEcPoliciesResult();
 }

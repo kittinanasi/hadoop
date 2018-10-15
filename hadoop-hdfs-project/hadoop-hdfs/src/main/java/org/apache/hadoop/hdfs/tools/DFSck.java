@@ -104,7 +104,9 @@ public class DFSck extends Configured implements Tool {
       + "\t-showprogress\tshow progress in output. Default is OFF (no progress)\n"
       + "\t-blockId\tprint out which file this blockId belongs to, locations"
       + " (nodes, racks) of this block, and other diagnostics info"
-      + " (under replicated, corrupted or not, etc)\n\n"
+      + " (under replicated, corrupted or not, etc)\n"
+      + "\t-verifyClusterSetupAgainstEcPolicies\tVerify the cluster setup can"
+      + " support all enabled erasure coding policies\n\n"
       + "Please Note:\n"
       + "\t1. By default fsck ignores files opened for write, "
       + "use -openforwrite to report such files. They are usually "
@@ -305,6 +307,8 @@ public class DFSck extends Configured implements Tool {
           idx++;
         }
         url.append("&blockId=").append(URLEncoder.encode(sb.toString(), "UTF-8"));
+      } else if (args[idx].equals("-verifyClusterSetupAgainstEcPolicies")) {
+        url.append("&verifyClusterSetupAgainstEcPolicies=1");
       } else if (!args[idx].startsWith("-")) {
         if (null == dir) {
           dir = args[idx];

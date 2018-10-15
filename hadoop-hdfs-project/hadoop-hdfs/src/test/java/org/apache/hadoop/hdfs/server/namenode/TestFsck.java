@@ -1447,6 +1447,23 @@ public class TestFsck {
   }
 
   /**
+   * Test for result of verifyClusterSetupAgainstEcPolicies in fsck report.
+   */
+  @Test
+  public void testFsckVerifyClusterSetupAgainstEcPolicies() throws Exception {
+    File builderBaseDir = new File(GenericTestUtils.getRandomizedTempPath());
+    cluster = new MiniDFSCluster.Builder(conf, builderBaseDir).numDataNodes(1)
+        .build();
+    String runFsck = runFsck(conf, 0, true, "/",
+        "-verifyClusterSetupAgainstEcPolicies");
+    assertTrue(runFsck.contains("Result of erasure coding support of " +
+        "the cluster setup:"));
+    assertTrue(runFsck.contains(" The number of DataNodes is less than " +
+        "the minimum required number of DataNodes for enabled erasure " +
+        "coding policy."));
+  }
+
+  /**
    * Test for blockIdCK.
    */
 

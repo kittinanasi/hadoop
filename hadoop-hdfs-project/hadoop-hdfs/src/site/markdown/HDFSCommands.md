@@ -106,6 +106,7 @@ Usage:
 | `-storagepolicies` | Print out storage policy summary for the blocks. |
 | `-maintenance` | Print out maintenance state node details. |
 | `-blockId` | Print out information about the block. |
+| `-verifyClusterSetupAgainstEcPolicies` | Verify the cluster setup can support all enabled erasure coding policies. |
 
 Runs the HDFS filesystem checking utility. See [fsck](./HdfsUserGuide.html#fsck) for more info.
 

@@ -151,6 +151,7 @@ public class NamenodeFsck implements DataEncryptionKeyFactory {
   private boolean showReplicaDetails = false;
   private boolean showUpgradeDomains = false;
   private boolean showMaintenanceState = false;
+  private boolean showVerifyClusterSetupAgainstEcPolicies = false;
   private long staleInterval;
   private Tracer tracer;
 
@@ -250,6 +251,8 @@ public class NamenodeFsck implements DataEncryptionKeyFactory {
         this.snapshottableDirs = new ArrayList<String>();
       } else if (key.equals("blockId")) {
         this.blockIds = pmap.get("blockId")[0];
+      } else if (key.equals("verifyClusterSetupAgainstEcPolicies")) {
+        this.showVerifyClusterSetupAgainstEcPolicies = true;
       }
     }
   }
@@ -414,6 +417,10 @@ public class NamenodeFsck implements DataEncryptionKeyFactory {
           out.print(storageTypeSummary);
         }
 
+        if (this.showVerifyClusterSetupAgainstEcPolicies) {
+          printVerifyClusterAgainstEcPoliciesMessage();
+        }
+
         out.println("FSCK ended at " + new Date() + " in "
             + (Time.monotonicNow() - startTime + " milliseconds"));
 
@@ -469,6 +476,32 @@ public class NamenodeFsck implements DataEncryptionKeyFactory {
     out.println("\n\nThe filesystem under path '" + path + "' has " + filler
         + " CORRUPT files");
     out.println();
+  }
+
+  private void printVerifyClusterAgainstEcPoliciesMessage() {
+    int verifyResult = namenode.getNamesystem()
+        .getVerifyClusterSetupSupportsEnabledEcPoliciesResult();
+    out.println("\nResult of erasure coding support of the cluster setup:");
+    if (verifyResult == 0) {
+      out.println(" The current cluster setup can support all " +
+          "enabled erasure coding policies.");
+    } else if (verifyResult == 1) {
+      out.println(" The number of DataNodes " +
+          "is less than the minimum required number of DataNodes " +
+          "for enabled erasure coding policy.");
+    } else if (verifyResult == 2) {
+      out.println(" The number of racks " +
+          "is less than the minimum required number of racks " +
+          "for enabled erasure coding policy.");
+    } else if (verifyResult == 3) {
+      out.println(" The rack configuration is very uneven. " +
+          "This will cause issues to erasure coding block placement. " +
+          "Reconfigure the topology to more evenly distribute the " +
+          "DataNodes among racks.");
+    } else {
+      out.println(" The cluster setup does not support " +
+          "all enabled erasure coding policies.");
+    }
   }
 
   @VisibleForTesting
@@ -1168,6 +1201,7 @@ public class NamenodeFsck implements DataEncryptionKeyFactory {
     long totalSize = 0L;
     long totalOpenFilesSize = 0L;
     long totalReplicas = 0L;
+    int verifyClusterSetupAgainstEcPoliciesResult = -1;
 
     /**
      * DFS is considered healthy if there are no missing blocks.

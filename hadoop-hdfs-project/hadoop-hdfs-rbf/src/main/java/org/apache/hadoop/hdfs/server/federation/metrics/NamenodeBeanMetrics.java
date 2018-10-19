@@ -50,6 +50,7 @@ import org.apache.hadoop.hdfs.server.federation.store.MembershipStore;
 import org.apache.hadoop.hdfs.server.federation.store.StateStoreService;
 import org.apache.hadoop.hdfs.server.federation.store.protocol.GetNamespaceInfoRequest;
 import org.apache.hadoop.hdfs.server.federation.store.protocol.GetNamespaceInfoResponse;
+import org.apache.hadoop.hdfs.server.namenode.ECTopologyVerifierResult;
 import org.apache.hadoop.hdfs.server.namenode.NameNodeMXBean;
 import org.apache.hadoop.hdfs.server.namenode.NameNodeStatusMXBean;
 import org.apache.hadoop.hdfs.server.namenode.metrics.FSNamesystemMBean;
@@ -705,5 +706,10 @@ public class NamenodeBeanMetrics
   @Override
   public int getNumEncryptionZones() {
     return 0;
+  }
+
+  @Override
+  public ECTopologyVerifierResult getVerifyECWithTopologyResult() {
+    return null;
   }
 }

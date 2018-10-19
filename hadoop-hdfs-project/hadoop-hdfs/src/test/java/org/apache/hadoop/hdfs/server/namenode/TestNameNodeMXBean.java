@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeDataSupport;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -1008,6 +1009,7 @@ public class TestNameNodeMXBean {
         expectedTotalReplicatedBlocks, totalReplicaBlocks.longValue());
     assertEquals("Unexpected total ec block groups!",
         expectedTotalECBlockGroups, totalECBlockGroups.longValue());
+    verifyEcClusterSetupVerifyResult(mbs);
   }
 
   private String getEnabledEcPoliciesMetric() throws Exception {
@@ -1016,5 +1018,21 @@ public class TestNameNodeMXBean {
         "Hadoop:service=NameNode,name=ECBlockGroupsState");
     return (String) (mbs.getAttribute(mxbeanName,
         "EnabledEcPolicies"));
+  }
+
+  private void verifyEcClusterSetupVerifyResult(MBeanServer mbs)
+      throws Exception{
+    ObjectName namenodeMXBeanName = new ObjectName(
+        "Hadoop:service=NameNode,name=NameNodeInfo");
+    CompositeDataSupport result = ((CompositeDataSupport)mbs.getAttribute(
+        namenodeMXBeanName,
+        "VerifyECWithTopologyResult"));
+    result.getCompositeType().equals(ECTopologyVerifierResult.class);
+    assertFalse("Test cluster does not support all enabled " +
+        "erasure coding policies.", (boolean) result.get("supported"));
+    String resultMessage = (String) result.get("resultMessage");
+    assertTrue(resultMessage.contains("The number of racks"));
+    assertTrue(resultMessage.contains("is less than the minimum required " +
+        "number of racks"));
   }
 }

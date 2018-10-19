@@ -36,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -147,9 +149,10 @@ public final class ErasureCodingPolicyManager {
     }
     enabledPolicies =
         enabledPoliciesByName.values().toArray(new ErasureCodingPolicy[0]);
-    allPolicies =
-        policiesByName.values().toArray(new ErasureCodingPolicyInfo[0]);
-
+    synchronized (this) {
+      allPolicies =
+          policiesByName.values().toArray(new ErasureCodingPolicyInfo[0]);
+    }
     maxCellSize = conf.getInt(
         DFSConfigKeys.DFS_NAMENODE_EC_POLICIES_MAX_CELLSIZE_KEY,
         DFSConfigKeys.DFS_NAMENODE_EC_POLICIES_MAX_CELLSIZE_DEFAULT);
@@ -198,6 +201,14 @@ public final class ErasureCodingPolicyManager {
    */
   public ErasureCodingPolicyInfo[] getPolicies() {
     return allPolicies;
+  }
+
+  public ErasureCodingPolicyInfo[] getCopyOfPolicies() {
+    ErasureCodingPolicyInfo[] copy;
+    synchronized (this) {
+      copy = Arrays.copyOf(allPolicies, allPolicies.length);
+    }
+    return copy;
   }
 
   /**
